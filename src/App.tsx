@@ -26,24 +26,19 @@ function App() {
             {id: v1(), title: "GraphQL", isDone: false}
         ]
     )
-    let [filter, setFilter] = useState<FilterValueType>('all')
-    let tasksForTodoList = tasks
-
-    if (filter === 'active') {
-        tasksForTodoList = tasks.filter(task => task.isDone === false)
-    }
-
-    if (filter === 'completed') {
-        tasksForTodoList = tasks.filter(task => task.isDone === true)
-    }
+    // let [filter, setFilter] = useState<FilterValueType>('all')
 
     const removeTask = (id: string) => {
         let filteredTask = tasks.filter(task => task.id !== id)
         setTasks(filteredTask)
     }
 
-    const changeFilter = (value: FilterValueType) => {
-        setFilter(value)
+    const changeFilter = (value: FilterValueType, todolistId: string) => {
+        let todolist = todolists.find(tl => tl.id == todolistId)
+        if (todolist) {
+            todolist.filter = value
+            setTodolists([...todolists])
+        }
     }
 
     const addTask = (title: string) => {
@@ -62,8 +57,20 @@ function App() {
     return (
         <div className="App">
             {
-                todolists.map(todolist =>
-                    <Todolist
+                todolists.map(todolist => {
+
+                    let
+                        tasksForTodoList = tasks
+
+                    if (todolist.filter === 'active') {
+                        tasksForTodoList = tasks.filter(task => task.isDone === false)
+                    }
+
+                    if (todolist.filter === 'completed') {
+                        tasksForTodoList = tasks.filter(task => task.isDone === true)
+                    }
+
+                    return <Todolist
                         key={todolist.id}
                         id={todolist.id}
                         title={todolist.title}
@@ -72,12 +79,14 @@ function App() {
                         changeFilter={changeFilter}
                         addTask={addTask}
                         changeTaskStatus={changeTaskStatus}
-                        filter={filter}
+                        filter={todolist.filter}
                     />
-                )
+
+                })
             }
         </div>
-    );
+    )
+        ;
 }
 
 export default App;

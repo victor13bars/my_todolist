@@ -13,12 +13,13 @@ type PropsType = {
     tasks: Array<TaskType>,
     filter: FilterValueType,
     removeTask: (id: string) => void
-    changeFilter: (value: FilterValueType) => void
+    changeFilter: (value: FilterValueType, todolistId: string) => void
     addTask: (title: string) => void
     changeTaskStatus: (id: string, isDone: boolean) => void
 }
 
 export function Todolist({
+                             id,
                              title,
                              tasks,
                              removeTask,
@@ -51,16 +52,16 @@ export function Todolist({
         }
     }
 
-    const onAllClickHandler = () => {
-        changeFilter('all')
+    const onAllClickHandler = (id: string) => {
+        changeFilter('all', id)
     }
 
-    const onActiveClickHandler = () => {
-        changeFilter('active')
+    const onActiveClickHandler = (id: string) => {
+        changeFilter('active', id)
     }
 
-    const onCompletedClickHandler = () => {
-        changeFilter('completed')
+    const onCompletedClickHandler = (id: string) => {
+        changeFilter('completed', id)
     }
 
     return <div>
@@ -95,19 +96,19 @@ export function Todolist({
         <div>
             <button
                 className={filter === 'all' ? 'active-filter' : ''}
-                onClick={onAllClickHandler}
+                onClick={() => onAllClickHandler(id)}
             >
                 All
             </button>
             <button
                 className={filter === 'active' ? 'active-filter' : ''}
-                onClick={onActiveClickHandler}
+                onClick={() => onActiveClickHandler(id)}
             >
                 Active
             </button>
             <button
                 className={filter === 'completed' ? 'active-filter' : ''}
-                onClick={onCompletedClickHandler}
+                onClick={() => onCompletedClickHandler(id)}
             >
                 Completed
             </button>
