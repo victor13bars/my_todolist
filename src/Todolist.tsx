@@ -1,7 +1,7 @@
 import React, {ChangeEvent, KeyboardEvent, useState} from 'react';
 import {FilterValueType} from "./App";
 
-type TaskType = {
+export type TaskType = {
     id: string
     title: string
     isDone: boolean
@@ -10,17 +10,19 @@ type TaskType = {
 type PropsType = {
     id: string
     title: string
+    removeTodolist: (id: string) => void,
     tasks: Array<TaskType>,
     filter: FilterValueType,
-    removeTask: (id: string) => void
+    removeTask: (id: string, todolistId: string) => void
     changeFilter: (value: FilterValueType, todolistId: string) => void
-    addTask: (title: string) => void
-    changeTaskStatus: (id: string, isDone: boolean) => void
+    addTask: (title: string, todolistId: string) => void
+    changeTaskStatus: (id: string, isDone: boolean, todolistId: string) => void
 }
 
 export function Todolist({
                              id,
                              title,
+                             removeTodolist,
                              tasks,
                              removeTask,
                              changeFilter,
@@ -32,9 +34,9 @@ export function Todolist({
     const [nameTask, setNameTask] = useState('')
     const [error, setError] = useState<string | null>(null)
 
-    const addNewTask = () => {
+    const addNewTask = (id: string) => {
         if (nameTask.trim() !== '') {
-            addTask(nameTask.trim())
+            addTask(nameTask.trim(), id)
             setNameTask('')
         } else {
             setError('Title is required')
@@ -48,7 +50,7 @@ export function Todolist({
     const onKeyPressHandler = (event: KeyboardEvent<HTMLInputElement>) => {
         setError(null)
         if (event.key === 'Enter') {
-            addTask(nameTask)
+            addTask(nameTask, id)
         }
     }
 
@@ -65,7 +67,10 @@ export function Todolist({
     }
 
     return <div>
-        <h3>{title}</h3>
+        <h3>
+            {title}
+            <button onClick={() => removeTodolist(id)}>✖</button>
+        </h3>
         <div>
             <input
                 value={nameTask}
@@ -73,15 +78,15 @@ export function Todolist({
                 onKeyPress={onKeyPressHandler}
                 className={error ? 'error' : ''}
             />
-            <button onClick={addNewTask}>+</button>
+            <button onClick={() => addNewTask(id)}>+</button>
             {error && <div className='error-message'>{error}</div>}
         </div>
         <ul>
             {tasks.map((task) => {
-                    const onClickHandler = () => removeTask(task.id)
+                    const onClickHandler = () => removeTask(task.id, id)
                     const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
                         let newIsDoneValue = event.currentTarget.checked
-                        changeTaskStatus(task.id, newIsDoneValue)
+                        changeTaskStatus(task.id, newIsDoneValue, id)
                     }
                     return (
                         <li key={task.id} className={task.isDone ? 'is-done' : ''}>
