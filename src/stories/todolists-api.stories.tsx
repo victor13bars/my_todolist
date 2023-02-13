@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import axios from "axios";
-import {todolistAPI} from "../api/todolist-api";
+import {TaskPriorities, TaskStatuses, todolistAPI} from "../api/todolist-api";
 
 export default {
     title: 'API'
@@ -55,5 +55,60 @@ export const UpdateTodolistTitle = () => {
             })
     }, [])
 
+    return <div>{JSON.stringify(state)}</div>
+}
+
+export const GetTasks = () => {
+    const [state, setState] = useState<any>(null)
+    useEffect(() => {
+
+        todolistAPI.getTasks('9e617260-5c0a-4abb-982d-d409a6f7cc36')
+            .then((res) => {
+                setState(res.data)
+            })
+    }, [])
+    return <div>{JSON.stringify(state)}</div>
+}
+
+export const CreateTask = () => {
+    const [state, setState] = useState<any>(null)
+    useEffect(() => {
+
+        todolistAPI.createTask('9e617260-5c0a-4abb-982d-d409a6f7cc36', 'ALL RIGHT')
+            .then((res) => {
+                setState(res.data)
+            })
+    }, [])
+    return <div>{JSON.stringify(state)}</div>
+}
+
+export const UpdateTask = () => {
+    const [state, setState] = useState<any>(null)
+    useEffect(() => {
+
+        todolistAPI.updateTask('9e617260-5c0a-4abb-982d-d409a6f7cc36', 'e497cbc7-f11f-48c7-b1bc-5b459955de13', {
+            title: 'Test',
+            description:'Test',
+            status: 0,
+            priority:0,
+            startDate: '',
+            deadline: ''
+        })
+            .then((res) => {
+                setState(res.data)
+            })
+    }, [])
+    return <div>{JSON.stringify(state)}</div>
+}
+
+export const DeleteTask = () => {
+    const [state, setState] = useState<any>(null)
+    useEffect(() => {
+
+        todolistAPI.deleteTask('9e617260-5c0a-4abb-982d-d409a6f7cc36', 'c93a6353-ed48-4200-9d54-746c9c9809bb')
+            .then((res) => {
+                setState(res.data)
+            })
+    }, [])
     return <div>{JSON.stringify(state)}</div>
 }
