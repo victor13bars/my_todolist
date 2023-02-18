@@ -1,5 +1,6 @@
 import {todolistsAPI, TodolistType} from "../api/todolists-api";
 import {Dispatch} from "redux";
+import {setAppStatusAC, SetAppStatusACType} from "./app-reducer";
 
 const initialState: Array<TodolistDomainType> = []
 
@@ -41,32 +42,40 @@ export const changeTodolistFilterAC = (id: string, filter: FilterValuesType): Ch
     ({type: 'CHANGE-TODOLIST-FILTER', id, filter})
 
 
-export const fetchTodolistsTC = (): any => (dispatch: Dispatch<ActionsType>) => {
+export const fetchTodolistsTC = () => (dispatch: ThunkDispatch) => {
+    dispatch(setAppStatusAC('loading'))
     todolistsAPI.getTodolists()
         .then((res) => {
             dispatch(setTodolistsAC(res.data))
+            dispatch(setAppStatusAC('succeeded'))
         })
 }
 
-export const removeTodolistTC = (todolistId: string): any => (dispatch: Dispatch<ActionsType>) => {
+export const removeTodolistTC = (todolistId: string) => (dispatch: ThunkDispatch) => {
+    dispatch(setAppStatusAC('loading'))
     todolistsAPI.deleteTodolist(todolistId)
         .then(() => {
             dispatch(removeTodolistAC(todolistId))
+            dispatch(setAppStatusAC('succeeded'))
         })
 }
 
-export const addTodolistTC = (title: string): any => (dispatch: Dispatch<ActionsType>) => {
+export const addTodolistTC = (title: string) => (dispatch: ThunkDispatch) => {
+    dispatch(setAppStatusAC('loading'))
     todolistsAPI.createTodolist(title)
         .then((res) => {
             dispatch(addTodolistAC(res.data.data.item))
+            dispatch(setAppStatusAC('succeeded'))
         })
 }
 
 export const changeTodolistTitleTC = (id: string, title: string) => {
-    return (dispatch: Dispatch<ActionsType>) => {
+    return (dispatch: ThunkDispatch) => {
+        dispatch(setAppStatusAC('loading'))
         todolistsAPI.updateTodolist(id, title)
             .then(() => {
                 dispatch(changeTodolistTitleAC(id, title))
+                dispatch(setAppStatusAC('succeeded'))
             })
     }
 }
@@ -107,3 +116,5 @@ export type FilterValuesType = 'all' | 'active' | 'completed';
 export type TodolistDomainType = TodolistType & {
     filter: FilterValuesType
 }
+
+type ThunkDispatch = Dispatch<ActionsType | SetAppStatusACType>
