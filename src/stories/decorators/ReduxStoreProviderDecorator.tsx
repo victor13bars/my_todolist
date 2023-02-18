@@ -94,8 +94,8 @@ const initialGlobalState = {
         ]
     }
 }
-
-export const storyBookStore = createStore(rootReducer, initialGlobalState as AppRootStateType)
+type initialGlobalStateType = typeof initialGlobalState
+export const storyBookStore = createStore(rootReducer, initialGlobalState as any)
 
 
 

@@ -29,7 +29,7 @@ export const TodolistsList: React.FC = () => {
     }, [])
 
     const addTask = useCallback(function (title: string, todolistId: string) {
-        const thunk = addTaskTC(title, todolistId)
+        const thunk = addTaskTC(todolistId,title)
         dispatch(thunk)
     }, [])
 
