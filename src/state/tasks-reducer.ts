@@ -1,105 +1,143 @@
-import {TasksStateType} from "../App";
-import {v1} from "uuid";
-import {AddTodolistActionType, RemoveTodolistActionType} from "./todolists-reducer";
+import {TaskPriorities, TaskStatuses, TaskType, todolistsAPI, UpdateTaskModelType} from "../api/todolists-api";
 
-type RemoveTaskActionType = {
-    type: 'REMOVE-TASK'
-    id: string
-    todolistId: string
-}
-type AddTaskActionType = {
-    type: 'ADD-TASK'
-    title: string,
-    todolistId: string
-}
-type ChangeTaskStatusActionType = {
-    type: 'CHANGE-TASK-STATUS'
-    id: string
-    isDone: boolean
-    todolistId: string
-}
-type ChangeTaskTitleActionType = {
-    type: 'CHANGE-TASK-TITLE'
-    id: string,
-    newTitle: string,
-    todolistId: string
-}
-
-type ActionType =
-    RemoveTaskActionType
-    | AddTaskActionType
-    | ChangeTaskStatusActionType
-    | ChangeTaskTitleActionType
-    | AddTodolistActionType
-    | RemoveTodolistActionType
+import {Dispatch} from "redux";
+import {AppRootStateType} from "./store";
+import {
+    AddTodolistACType,
+    RemoveTodolistACType, SetTodolistsACType,
+} from "./todolists-reducer";
 
 const initialState: TasksStateType = {}
 
-export const tasksReducer = (state: TasksStateType = initialState, action: ActionType) => {
+export const tasksReducer = (state = initialState, action: ActionsType): TasksStateType => {
     switch (action.type) {
-
+        case "SET-TASKS": {
+            return {...state, [action.todolistId]: action.tasks}
+        }
         case 'REMOVE-TASK': {
-            const stateCopy = {...state};
-            const tasks = state[action.todolistId];
-            const filteredTasks = tasks.filter(t => t.id !== action.id)
-            stateCopy[action.todolistId] = filteredTasks;
-            return stateCopy;
+            return {...state, [action.todolistId]: state[action.todolistId].filter(t => t.id !== action.taskId)}
         }
         case 'ADD-TASK': {
-            const stateCopy = {...state};
-            const tasks = stateCopy[action.todolistId];
-            const newTask = {id: v1(), title: action.title, isDone: false};
-            const newTasks = [newTask, ...tasks];
-            stateCopy[action.todolistId] = newTasks;
-            return stateCopy;
+            return {...state, [action.task.todoListId]: [action.task, ...state[action.task.todoListId]]}
         }
-        case 'CHANGE-TASK-STATUS': {
-            let todolistTasks = state[action.todolistId]
-            let task = todolistTasks.find(t => t.id === action.id)
-            if (task) {
-                task.isDone = action.isDone
+        case 'UPDATE-TASK':
+            return {
+                ...state,
+                [action.todolistId]: state[action.todolistId]
+                    .map(t => t.id === action.taskId ? {...t, ...action.model} : t)
             }
-            state[action.todolistId] = [...todolistTasks]
-            return {...state}
-        }
-        case 'CHANGE-TASK-TITLE': {
-            let todolistTasks = state[action.todolistId]
-            let task = todolistTasks.find(t => t.id === action.id)
-            if (task) {
-                task.title = action.newTitle
-            }
-            state[action.todolistId] = [...todolistTasks]
-            return {...state}
-        }
-        case 'ADD-TODOLIST': {
-            const stateCopy = {...state};
-
-            stateCopy[action.todolistId] = [];
-
-            return stateCopy;
-        }
+        case 'ADD-TODOLIST':
+            return {...state, [action.todolist.id]: []}
         case 'REMOVE-TODOLIST': {
-            const stateCopy = {...state};
-            delete stateCopy[action.id]
-            return stateCopy;
+            const copyState = {...state};
+            delete copyState[action.todolistId];
+            return copyState;
+        }
+        case "SET-TODOLIST": {
+            const stateCopy = {...state}
+            action.todolists.forEach((tl) => {
+                stateCopy[tl.id] = []
+            })
+            return stateCopy
         }
         default:
-            return state
+            return state;
     }
 }
 
-export const removeTaskAC = (id: string, todolistId: string): RemoveTaskActionType => {
-    return {type: 'REMOVE-TASK', id, todolistId}
+export const setTasksAC = (tasks: Array<TaskType>, todolistId: string): SetTasksACType =>
+    ({type: 'SET-TASKS', tasks, todolistId})
+
+export const removeTaskAC = (taskId: string, todolistId: string): RemoveTaskACType =>
+    ({type: 'REMOVE-TASK', taskId, todolistId})
+
+export const addTaskAC = (task: TaskType): AddTaskACType => ({type: 'ADD-TASK', task})
+
+export const updateTaskAC = (taskId: string, model: UpdateDomainTaskModelType, todolistId: string): UpdateTaskACType =>
+    ({type: 'UPDATE-TASK', model, todolistId, taskId})
+
+//thunks
+
+export const fetchTasksTC = (todolistId: string): any => (dispatch: Dispatch<ActionsType>) => {
+    todolistsAPI.getTasks(todolistId).then((res) => {
+        const tasks = res.data.items
+        dispatch(setTasksAC(tasks, todolistId))
+    })
 }
 
-export const addTaskAC = (title: string, todolistId: string): AddTaskActionType => {
-    return {type: 'ADD-TASK', title, todolistId}
+export const removeTaskTC = (taskId: string, todolistId: string): any => (dispatch: Dispatch<ActionsType>) => {
+    todolistsAPI.deleteTask(taskId, todolistId).then((res) => {
+        dispatch(removeTaskAC(taskId, todolistId))
+    })
 }
 
-export const changeTaskStatusAC = (id: string, isDone: boolean, todolistId: string): ChangeTaskStatusActionType => {
-    return {type: 'CHANGE-TASK-STATUS', id, isDone, todolistId}
+export const addTaskTC = (todolistId: string, title: string): any => (dispatch: Dispatch<ActionsType>) => {
+    todolistsAPI.createTask(todolistId, title).then((res) => {
+        dispatch(addTaskAC(res.data.data.item))
+    })
 }
 
-export const changeTaskTitleAC = (id: string, newTitle: string, todolistId: string): ChangeTaskTitleActionType => {
-    return {type: 'CHANGE-TASK-TITLE', id, newTitle, todolistId}
+export const updateTaskTC = (taskId: string, domainModel: UpdateDomainTaskModelType, todolistId: string): any =>
+    (dispatch: Dispatch<ActionsType>, getState: () => AppRootStateType) => {
+
+        const task = getState().tasks[todolistId].find(t => t.id === taskId)
+        if (!task) {
+            throw new Error("task not found in the state");
+            return
+        }
+
+        const apiModel: UpdateTaskModelType = {
+            deadline: task.deadline,
+            description: task.description,
+            priority: task.priority,
+            startDate: task.startDate,
+            title: task.title,
+            status: task.status,
+            ...domainModel
+        }
+
+        todolistsAPI.updateTask(todolistId, taskId, apiModel).then(() => {
+            const action = updateTaskAC(taskId, domainModel, todolistId)
+            dispatch(action)
+        })
+    }
+export type TasksStateType = {
+    [key: string]: Array<TaskType>
 }
+export type UpdateDomainTaskModelType = {
+    title?: string
+    description?: string
+    status?: TaskStatuses
+    priority?: TaskPriorities
+    startDate?: string
+    deadline?: string
+}
+export type RemoveTaskACType = {
+    type: 'REMOVE-TASK',
+    taskId: string,
+    todolistId: string
+}
+export type SetTasksACType = {
+    type: 'SET-TASKS',
+    tasks: Array<TaskType>,
+    todolistId: string
+}
+export type UpdateTaskACType = {
+    type: 'UPDATE-TASK',
+    taskId: string,
+    model: UpdateDomainTaskModelType,
+    todolistId: string
+}
+export type AddTaskACType = {
+    type: 'ADD-TASK',
+    task: TaskType
+}
+
+type ActionsType =
+    RemoveTaskACType
+    | SetTasksACType
+    | AddTaskACType
+    | UpdateTaskACType
+    | AddTodolistACType
+    | RemoveTodolistACType
+    | SetTodolistsACType
