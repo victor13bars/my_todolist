@@ -6,6 +6,7 @@ import {Button, Container, IconButton, LinearProgress, Toolbar, Typography} from
 import {Menu} from "@mui/icons-material";
 import {TodolistsList} from "./TodolistsList";
 import {useTypedSelector} from "./hooks/useTypedSelector";
+import {ErrorSnackbar} from "./ErrorSnackbar";
 
 const AppWithRedux: React.FC = () => {
 
@@ -13,6 +14,7 @@ const AppWithRedux: React.FC = () => {
 
     return (
         <div className="App">
+            <ErrorSnackbar/>
             <AppBar position="static">
                 <Toolbar>
                     <IconButton edge="start" color="inherit" aria-label="menu">
