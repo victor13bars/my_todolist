@@ -5,25 +5,26 @@ import React, {ChangeEvent, useState} from 'react';
 type EditableSpanPropsType = {
     value: string
     onChange: (newValue: string) => void
+    disabled?: boolean
 }
 
-export function EditableSpan(props: EditableSpanPropsType) {
+export function EditableSpan({value, onChange, disabled = false}: EditableSpanPropsType) {
     let [editMode, setEditMode] = useState(false);
-    let [title, setTitle] = useState(props.value);
+    let [title, setTitle] = useState(value);
 
     const activateEditMode = () => {
         setEditMode(true);
-        setTitle(props.value);
+        setTitle(value);
     }
     const activateViewMode = () => {
         setEditMode(false);
-        props.onChange(title);
+        onChange(title);
     }
     const changeTitle = (e: ChangeEvent<HTMLInputElement>) => {
         setTitle(e.currentTarget.value)
     }
 
-    return editMode ?
+    return editMode && !disabled ?
         <TextField
             variant="outlined"
             value={title}
@@ -33,6 +34,6 @@ export function EditableSpan(props: EditableSpanPropsType) {
         />
         :
         <span onDoubleClick={activateEditMode}>
-            {props.value}
+            {value}
         </span>
 }
