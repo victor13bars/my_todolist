@@ -9,13 +9,17 @@ import {ErrorSnackbar} from "./ErrorSnackbar";
 import {Login} from "./Login";
 import {TodolistsList} from './TodolistsList';
 import {useAppDispatch} from "./state/store";
-import {initializeAppTC} from "./state/auth-reducer";
+import {initializeAppTC, logoutTC} from "./state/auth-reducer";
 
 const AppWithRedux: React.FC = () => {
 
+    const isLoggedIn = useTypedSelector(state => state.auth.isLoggedIn)
     const isInitialized = useTypedSelector(state => state.auth.isInitialized)
     const status = useTypedSelector(state => state.app.status)
     const dispatch = useAppDispatch()
+    const logoutHandler = () => {
+        dispatch(logoutTC())
+    }
 
     useEffect(() => {
         dispatch(initializeAppTC())
@@ -39,7 +43,7 @@ const AppWithRedux: React.FC = () => {
                     <Typography variant="h6">
                         News
                     </Typography>
-                    <Button color="inherit">Login</Button>
+                    {isLoggedIn && <Button onClick={logoutHandler} color="inherit">Logout</Button>}
                 </Toolbar>
                 {status === 'loading' && <LinearProgress/>}
             </AppBar>
