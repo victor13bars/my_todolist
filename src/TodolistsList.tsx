@@ -5,22 +5,25 @@ import {
     fetchTodolistsTC, FilterValuesType, changeTodolistFilterAC,
     removeTodolistTC, changeTodolistTitleTC, addTodolistTC
 } from "./state/todolists-reducer";
-import {removeTaskTC, updateTaskTC,addTaskTC} from "./state/tasks-reducer";
+import {removeTaskTC, updateTaskTC, addTaskTC} from "./state/tasks-reducer";
 import {useTypedSelector} from "./hooks/useTypedSelector";
 import {useAppDispatch} from "./state/store";
 import {Grid, Paper} from "@mui/material";
 import {Todolist} from "./Todolist";
+import {Navigate} from "react-router-dom";
 
 export const TodolistsList: React.FC = () => {
 
     const todolists = useTypedSelector(state => state.todolists)
     const tasks = useTypedSelector(state => state.tasks)
-
+    const isLoggedIn = useTypedSelector(state => state.auth.isLoggedIn)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        const thunk = fetchTodolistsTC()
-        dispatch(thunk)
+
+        if (!isLoggedIn) return
+
+        dispatch(fetchTodolistsTC())
     }, [])
 
     const removeTask = useCallback(function (id: string, todolistId: string) {
@@ -29,7 +32,7 @@ export const TodolistsList: React.FC = () => {
     }, [])
 
     const addTask = useCallback(function (title: string, todolistId: string) {
-        const thunk = addTaskTC(todolistId,title)
+        const thunk = addTaskTC(todolistId, title)
         dispatch(thunk)
     }, [])
 
@@ -63,6 +66,9 @@ export const TodolistsList: React.FC = () => {
         dispatch(thunk)
     }, [])
 
+    if (!isLoggedIn) {
+        return <Navigate to={'/login'}/>
+    }
 
     return <>
         <Grid container style={{padding: '20px'}}>
