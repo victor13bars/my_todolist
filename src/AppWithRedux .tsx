@@ -4,18 +4,18 @@ import {Routes, Route, Navigate, BrowserRouter} from 'react-router-dom';
 import AppBar from '@mui/material/AppBar/AppBar';
 import {Button, CircularProgress, Container, IconButton, LinearProgress, Toolbar, Typography} from "@mui/material";
 import {Menu} from "@mui/icons-material";
-import {useTypedSelector} from "./hooks/useTypedSelector";
+import {redux} from "./hooks/redux";
 import {ErrorSnackbar} from "./ErrorSnackbar";
 import {Login} from "./Login";
 import {TodolistsList} from './TodolistsList';
-import {useAppDispatch} from "./state/store";
-import {initializeAppTC, logoutTC} from "./state/auth-reducer";
+import {useAppDispatch} from "./store/store";
+import {initializeAppTC, logoutTC} from "./store/auth-reducer";
 
 const AppWithRedux: React.FC = () => {
 
-    const isLoggedIn = useTypedSelector(state => state.auth.isLoggedIn)
-    const isInitialized = useTypedSelector(state => state.auth.isInitialized)
-    const status = useTypedSelector(state => state.app.status)
+    const isLoggedIn = redux(state => state.auth.isLoggedIn)
+    const isInitialized = redux(state => state.auth.isInitialized)
+    const status = redux(state => state.app.status)
     const dispatch = useAppDispatch()
     const logoutHandler = () => {
         dispatch(logoutTC())

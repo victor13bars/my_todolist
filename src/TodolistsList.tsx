@@ -4,19 +4,19 @@ import {TaskStatuses} from "./api/todolists-api";
 import {
     fetchTodolistsTC, FilterValuesType, changeTodolistFilterAC,
     removeTodolistTC, changeTodolistTitleTC, addTodolistTC
-} from "./state/todolists-reducer";
-import {removeTaskTC, updateTaskTC, addTaskTC} from "./state/tasks-reducer";
-import {useTypedSelector} from "./hooks/useTypedSelector";
-import {useAppDispatch} from "./state/store";
+} from "./store/todolists-reducer";
+import {removeTaskTC, updateTaskTC, addTaskTC} from "./store/tasks-reducer";
+import {redux} from "./hooks/redux";
+import {useAppDispatch} from "./store/store";
 import {Grid, Paper} from "@mui/material";
 import {Todolist} from "./Todolist";
 import {Navigate} from "react-router-dom";
 
 export const TodolistsList: React.FC = () => {
 
-    const todolists = useTypedSelector(state => state.todolists)
-    const tasks = useTypedSelector(state => state.tasks)
-    const isLoggedIn = useTypedSelector(state => state.auth.isLoggedIn)
+    const todolists = redux(state => state.todolists)
+    const tasks = redux(state => state.tasks)
+    const isLoggedIn = redux(state => state.auth.isLoggedIn)
     const dispatch = useAppDispatch()
 
     useEffect(() => {

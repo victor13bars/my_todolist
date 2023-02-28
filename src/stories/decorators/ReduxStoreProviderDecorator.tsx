@@ -1,8 +1,8 @@
 import {Provider} from "react-redux";
-import {AppRootStateType, store} from "../../state/store";
+import {AppRootStateType, store} from "../../store/store";
 import {combineReducers, createStore} from "redux";
-import {todolistsReducer} from "../../state/todolists-reducer";
-import {tasksReducer} from "../../state/tasks-reducer";
+import {todolistsReducer} from "../../store/todolists-reducer";
+import {tasksReducer} from "../../store/tasks-reducer";
 import {v1} from "uuid";
 
 const rootReducer = combineReducers({

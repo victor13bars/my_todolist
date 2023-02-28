@@ -12,8 +12,8 @@ import React, {useReducer} from 'react';
 //     changeTodolistTitleAC,
 //     removeTodolistAC,
 //     todolistsReducer
-// } from "./state/todolists-reducer";
-// import {addTaskAC, changeTaskStatusAC, changeTaskTitleAC, removeTaskAC, tasksReducer} from "./state/tasks-reducer";
+// } from "./store/todolists-reducer";
+// import {addTaskAC, changeTaskStatusAC, changeTaskTitleAC, removeTaskAC, tasksReducer} from "./store/tasks-reducer";
 //
 //
 // export type FilterValuesType = "all" | "active" | "completed";
