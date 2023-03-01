@@ -1,10 +1,10 @@
 import {TaskPriorities, TaskStatuses, TaskType, todolistsAPI, UpdateTaskModelType} from "../api/todolists-api";
 
 import {Dispatch} from "redux";
-import {AppRootStateType} from "./store";
 import {AddTodolistACType, RemoveTodolistACType, SetTodolistsACType,} from "./todolists-reducer";
 import {SetAppErrorACType, setAppStatusAC, SetAppStatusACType} from "./app-reducer";
 import {handleServerAppError, handleServerNetworkError} from "../utils/error-utils";
+import {RootState} from "./store";
 
 const initialState: TasksStateType = {}
 
@@ -103,7 +103,7 @@ export const addTaskTC = (todolistId: string, title: string) => (dispatch: Thunk
 }
 
 export const updateTaskTC = (taskId: string, domainModel: UpdateDomainTaskModelType, todolistId: string) =>
-    (dispatch: ThunkDispatch, getState: () => AppRootStateType) => {
+    (dispatch: ThunkDispatch, getState: () => RootState) => {
 
         const task = getState().tasks[todolistId].find(t => t.id === taskId)
         if (!task) {

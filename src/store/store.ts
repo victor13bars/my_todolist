@@ -1,6 +1,6 @@
 import {combineReducers} from "redux";
-import {tasksReducer} from "./tasks-reducer";
-import {todolistsReducer} from "./todolists-reducer";
+import tasksReducer from "./reducers/TasksSlice";
+import todolistsReducer from "./reducers/TodolistsSlice";
 import {configureStore} from "@reduxjs/toolkit";
 import authReducer from './reducers/AuthSlice'
 import {todolistAPI} from "../services/TodoService";
@@ -8,7 +8,7 @@ import {todolistAPI} from "../services/TodoService";
 const rootReducer = combineReducers({
     tasks: tasksReducer,
     todolists: todolistsReducer,
-    authReducer,
+    auth: authReducer,
     [todolistAPI.reducerPath]: todolistAPI.reducer
 })
 

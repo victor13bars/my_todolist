@@ -1,5 +1,5 @@
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {initializeApp, login, logout} from "./AsyncActionCreators";
+import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {authAPI, LoginParamsType} from "../../api/todolists-api";
 
 export type RequestStatusType = 'idle' | 'loading' | 'succeeded' | 'failed'
 
@@ -9,6 +9,42 @@ export type initialStateType = {
     status: RequestStatusType
     error: string | null
 }
+
+export const login = createAsyncThunk(
+    'auth/login',
+    async (data: LoginParamsType, thunkAPI) => {
+        try {
+            const response = await authAPI.login(data)
+            return response.data
+        } catch ({error: message}) {
+            return thunkAPI.rejectWithValue(message ? message : 'failed')
+        }
+    }
+)
+
+export const logout = createAsyncThunk(
+    'auth/logout',
+    async (_, thunkAPI) => {
+        try {
+            const response = await authAPI.logout()
+            return response.data
+        } catch ({error: message}) {
+            return thunkAPI.rejectWithValue(message ? message : 'failed')
+        }
+    }
+)
+
+export const initializeApp = createAsyncThunk(
+    'auth/initializeApp',
+    async (_, thunkAPI) => {
+        try {
+            const response = await authAPI.me()
+            return response.data
+        } catch ({error: message}) {
+            return thunkAPI.rejectWithValue(message ? message : 'failed')
+        }
+    }
+)
 
 
 export const initialState: initialStateType = {
@@ -76,4 +112,5 @@ export const authSlice = createSlice({
     }
 })
 
+export const {setAppErrorAC, setAppStatus, setIsInitialized, setIsLoggedIn} = authSlice.actions
 export default authSlice.reducer
