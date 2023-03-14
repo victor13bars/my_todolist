@@ -1,28 +1,27 @@
 import React, {useEffect} from 'react';
 import './App.css';
-import {Routes, Route, Navigate, BrowserRouter} from 'react-router-dom';
+import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
 import AppBar from '@mui/material/AppBar/AppBar';
 import {Button, CircularProgress, Container, IconButton, LinearProgress, Toolbar, Typography} from "@mui/material";
 import {Menu} from "@mui/icons-material";
-import {redux} from "./hooks/redux";
+import {useAppDispatch, useAppSelector} from "./hooks/redux";
 import {ErrorSnackbar} from "./ErrorSnackbar";
 import {Login} from "./Login";
 import {TodolistsList} from './TodolistsList';
-import {useAppDispatch} from "./store/store";
-import {initializeAppTC, logoutTC} from "./store/auth-reducer";
+import {initializeApp, logout} from "./store/reducers/AuthSlice";
 
 const AppWithRedux: React.FC = () => {
 
-    const isLoggedIn = redux(state => state.auth.isLoggedIn)
-    const isInitialized = redux(state => state.auth.isInitialized)
-    const status = redux(state => state.app.status)
+    const isLoggedIn = useAppSelector(state => state.auth.isLoggedIn)
+    const isInitialized = useAppSelector(state => state.auth.isInitialized)
+    const status = useAppSelector(state => state.auth.status)
     const dispatch = useAppDispatch()
     const logoutHandler = () => {
-        dispatch(logoutTC())
+        dispatch(logout())
     }
 
     useEffect(() => {
-        dispatch(initializeAppTC())
+        dispatch(initializeApp())
     }, [])
 
     if (!isInitialized) {

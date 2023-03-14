@@ -1,13 +1,13 @@
 import React, {useCallback, useEffect} from 'react'
-import {useAppDispatch} from "./store/store";
 import {TaskStatuses, TaskType} from "./api/todolists-api";
-import {fetchTasksTC} from "./store/tasks-reducer";
 import {Delete} from "@mui/icons-material";
 import {EditableSpan} from "./EditableSpan";
 import {FilterValuesType, TodolistDomainType} from "./store/todolists-reducer";
 import {Button, IconButton} from "@mui/material";
 import {AddItemForm} from "./AddItemForm";
 import {Task} from "./Task";
+import {useAppDispatch} from "./hooks/redux";
+import {fetchTasksTC} from "./store/reducers/TasksSlice";
 
 
 type PropsType = {
@@ -76,7 +76,7 @@ export const Todolist = React.memo(function (props: PropsType) {
         />
         <div>
             {
-                tasksForTodolist.map(t => <Task key={t.id} task={t} todolistId={props.id}
+                tasksForTodolist?.map(t => <Task key={t.id} task={t} todolistId={props.id}
                                                 removeTask={props.removeTask}
                                                 changeTaskTitle={props.changeTaskTitle}
                                                 changeTaskStatus={props.changeTaskStatus}

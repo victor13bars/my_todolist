@@ -4,7 +4,7 @@ import AppWithRedux from "./AppWithRedux ";
 import {Provider} from "react-redux";
 import {setupStore} from "./store/store";
 
-const store = setupStore()
+export const store = setupStore()
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement

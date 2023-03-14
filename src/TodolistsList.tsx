@@ -1,48 +1,51 @@
 import React, {useCallback, useEffect} from 'react';
 import {AddItemForm} from './AddItemForm';
 import {TaskStatuses} from "./api/todolists-api";
-import {
-    fetchTodolistsTC, FilterValuesType, changeTodolistFilterAC,
-    removeTodolistTC, changeTodolistTitleTC, addTodolistTC
-} from "./store/todolists-reducer";
-import {removeTaskTC, updateTaskTC, addTaskTC} from "./store/tasks-reducer";
-import {redux} from "./hooks/redux";
-import {useAppDispatch} from "./store/store";
+import {useAppDispatch, useAppSelector} from "./hooks/redux";
 import {Grid, Paper} from "@mui/material";
 import {Todolist} from "./Todolist";
 import {Navigate} from "react-router-dom";
+import {
+    addTodolistTC,
+    changeTodolistTitleTC,
+    fetchTodolists,
+    FilterValuesType,
+    removeTodolistTC
+} from "./store/reducers/TodolistsSlice";
+import {addTaskTC, removeTaskTC, updateTaskTC} from './store/reducers/TasksSlice';
+import {changeTodolistFilterAC} from "./store/todolists-reducer";
 
 export const TodolistsList: React.FC = () => {
 
-    const todolists = redux(state => state.todolists)
-    const tasks = redux(state => state.tasks)
-    const isLoggedIn = redux(state => state.auth.isLoggedIn)
+    const todolists = useAppSelector(state =>state.todolists.todolists)
+    const tasks = useAppSelector(state => state.tasks)
+    const isLoggedIn = useAppSelector(state => state.auth.isLoggedIn)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
 
         if (!isLoggedIn) return
 
-        dispatch(fetchTodolistsTC())
+        dispatch(fetchTodolists())
     }, [])
 
-    const removeTask = useCallback(function (id: string, todolistId: string) {
-        const thunk = removeTaskTC(id, todolistId)
+    const removeTask = useCallback(function (taskId: string, todolistId: string) {
+        const thunk = removeTaskTC({taskId, todolistId})
         dispatch(thunk)
     }, [])
 
     const addTask = useCallback(function (title: string, todolistId: string) {
-        const thunk = addTaskTC(todolistId, title)
+        const thunk = addTaskTC({todolistId, title})
         dispatch(thunk)
     }, [])
 
-    const changeStatus = useCallback(function (id: string, status: TaskStatuses, todolistId: string) {
-        const thunk = updateTaskTC(id, {status}, todolistId)
+    const changeStatus = useCallback(function (taskId: string, status: TaskStatuses, todolistId: string) {
+        const thunk = updateTaskTC({taskId, model: {status}, todolistId})
         dispatch(thunk)
     }, [])
 
-    const changeTaskTitle = useCallback(function (id: string, newTitle: string, todolistId: string) {
-        const thunk = updateTaskTC(id, {title: newTitle}, todolistId)
+    const changeTaskTitle = useCallback(function (taskId: string, title: string, todolistId: string) {
+        const thunk = updateTaskTC({taskId, model: {title}, todolistId})
         dispatch(thunk)
     }, [])
 
@@ -57,7 +60,7 @@ export const TodolistsList: React.FC = () => {
     }, [])
 
     const changeTodolistTitle = useCallback(function (id: string, title: string) {
-        const thunk = changeTodolistTitleTC(id, title)
+        const thunk = changeTodolistTitleTC({id, title})
         dispatch(thunk)
     }, [])
 

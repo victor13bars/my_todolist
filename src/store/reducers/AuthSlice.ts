@@ -67,7 +67,7 @@ export const authSlice = createSlice({
         setAppStatus(state, action: PayloadAction<RequestStatusType>) {
             state.status = action.payload
         },
-        setAppErrorAC(state, action: PayloadAction<string | null>) {
+        setAppError(state, action: PayloadAction<string | null>) {
             state.error = action.payload
         },
     },
@@ -112,5 +112,5 @@ export const authSlice = createSlice({
     }
 })
 
-export const {setAppErrorAC, setAppStatus, setIsInitialized, setIsLoggedIn} = authSlice.actions
+export const {setAppError, setAppStatus, setIsInitialized, setIsLoggedIn} = authSlice.actions
 export default authSlice.reducer

@@ -1,9 +1,8 @@
 import React from 'react';
 import Snackbar from '@mui/material/Snackbar'
 import MuiAlert from '@mui/material/Alert'
-import {useTypedSelector} from "./hooks/useTypedSelector";
-import {useAppDispatch} from "./state/store";
-import {setAppErrorAC} from "./state/app-reducer";
+import {useAppDispatch, useAppSelector} from "./hooks/redux";
+import {setAppError} from "./store/reducers/AuthSlice";
 
 const Alert = React.forwardRef(function Alert(
     props, ref) {
@@ -12,14 +11,14 @@ const Alert = React.forwardRef(function Alert(
 
 export const ErrorSnackbar = () => {
 
-    const error = useTypedSelector(state => state.app.error)
+    const error = useAppSelector(state => state.auth.error)
     const dispatch = useAppDispatch()
 
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
             return
         }
-        dispatch(setAppErrorAC(null))
+        dispatch(setAppError(null))
     }
     return (
         <Snackbar open={error !== null} autoHideDuration={6000} onClose={handleClose}>

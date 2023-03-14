@@ -20,8 +20,12 @@ export type TodolistDomainType = TodolistType & {
     filter: FilterValuesType
     entityStatus: RequestStatusType
 }
-
-export const initialState: Array<TodolistType> = []
+export type initialStateType = {
+    todolists: Array<TodolistDomainType>
+}
+export const initialState: initialStateType = {
+    todolists: []
+}
 
 export const fetchTodolists = createAsyncThunk(
     'todolists/fetch',
@@ -44,7 +48,7 @@ export const addTodolistTC = createAsyncThunk(
         try {
             const response = await todolistsAPI.createTodolist(title)
             if (response.data.resultCode === 0) {
-                dispatch(addTodolist(response.data.data.item))
+                dispatch(addTodo(response.data.data.item))
                 dispatch(setAppStatus('succeeded'))
             } else {
                 handleServerAppError(response.data, dispatch)
@@ -101,33 +105,33 @@ export const todolistsSlice = createSlice({
     initialState,
     reducers: {
         setTodolists(state, action: PayloadAction<Array<TodolistType>>) {
-            state = action.payload.map(tl => ({...tl, filter: 'all', entityStatus: 'idle'}))
+            state.todolists = action.payload.map(tl => ({...tl, filter: 'all', entityStatus: 'idle'}))
         },
-        addTodolist(state, action) {
-            state = [{...action.payload, filter: 'all', entityStatus: 'idle'}, ...state]
+        addTodo(state, action: PayloadAction<TodolistType>) {
+            state.todolists = [{...action.payload, filter: 'all', entityStatus: 'idle'}, ...state.todolists]
 
         },
         removeTodolist(state, action: PayloadAction<string>) {
-            state = state.filter(el => el.id !== action.payload)
+            state.todolists = state.todolists.filter(el => el.id !== action.payload)
         },
         changeTodolistFilter(state, action: PayloadAction<ChangeTodoFilterType>) {
             const {id, filter} = action.payload
-            state = state.map(tl => tl.id === id ? {...tl, filter} : tl)
+            state.todolists = state.todolists.map(tl => tl.id === id ? {...tl, filter} : tl)
         },
         changeTodolistTitle(state, action: PayloadAction<ChangeTodoTitleType>) {
             const {id, title} = action.payload
-            state = state.map(tl => tl.id === id ? {...tl, title} : tl)
+            state.todolists = state.todolists.map(tl => tl.id === id ? {...tl, title} : tl)
         },
         changeTodolistEntityStatus(state, action: PayloadAction<ChangeTodoEntityStatusType>) {
             const {id, status} = action.payload
-            state = state.map(tl => tl.id === id ? {...tl, entityStatus: status} : tl)
+            state.todolists = state.todolists.map(tl => tl.id === id ? {...tl, entityStatus: status} : tl)
         },
     }
 })
 
 export const {
     setTodolists,
-    addTodolist,
+    addTodo,
     removeTodolist,
     changeTodolistEntityStatus,
     changeTodolistFilter,
