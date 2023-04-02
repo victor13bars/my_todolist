@@ -16,6 +16,10 @@ export type AddTaskType = {
     todolistId: string,
     title: string
 }
+export type AddTaskActionType = {
+    task: TaskType,
+    todolistId: string
+}
 export type UpdateTaskType = {
     taskId: string,
     model: UpdateDomainTaskModelType,
@@ -49,7 +53,10 @@ export const addTaskTC = createAsyncThunk(
         try {
             const response = await todolistsAPI.createTask(todolistId, title)
             if (response.data.resultCode === 0) {
-                dispatch(addTask(response.data.data.item))
+                let task = response.data.data.item
+                dispatch(addTask({task, todolistId}))
+                console.log(response.data.data)
+                console.log(response.data.data.item)
                 dispatch(setAppStatus('succeeded'))
             } else {
                 handleServerAppError(response.data, dispatch)
@@ -124,20 +131,20 @@ export const tasksSlice = createSlice({
     reducers: {
         setTasks(state, action: PayloadAction<SetTasksType>) {
             const {tasks, todolistId} = action.payload
-            state = {[todolistId]: tasks}
+            state[todolistId] = tasks
         },
-        addTask(state, action: PayloadAction<TaskType>) {
-            state = {[action.payload.todoListId]: [action.payload, ...state[action.payload.todoListId]]}
+        addTask(state, action: PayloadAction<AddTaskActionType>) {
+            const {task, todolistId} = action.payload
+            state[todolistId] = [task, ...state[todolistId]]
         },
         removeTask(state, action: PayloadAction<RemoveTaskType>) {
             const {taskId, todolistId} = action.payload
-            state = {[action.payload.todolistId]: state[action.payload.todolistId].filter(t => t.id !== action.payload.taskId)}
+            state[todolistId] = state[todolistId].filter(t => t.id !== taskId)
         },
         updateTask(state, action: PayloadAction<UpdateTaskType>) {
             const {taskId, model, todolistId} = action.payload
-            state = {
-                [action.payload.todolistId]: state[action.payload.todolistId].map(t => t.id === action.payload.taskId ? {...t, ...action.payload.model} : t)
-            }
+            state[todolistId] = state[todolistId].map(t => t.id === taskId ? {...t, ...model} : t)
+
         },
 
     },
